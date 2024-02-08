@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Array</title>
+</head>
+<body>
+	<script type="text/javascript">
+		
+		// var array = ["pratik",21,"MCA","Rajkot"];
+		// document.write(array);
+
+	</script>
+
+	<script type="text/javascript">
+		document.write("<div>")
+		
+		var sum =0;
+			var arr = new Array();
+			arr[0] = 21;
+			arr[1] = 21;
+			arr[2] = 45;
+			arr[3] = 45;
+
+			for(var i=0;i<arr.length;i++){
+				sum = sum+arr[i];
+			}
+			document.write(sum,"<br>");
+			document.write(arr,"<br>");
+		document.write("</div>")
+
+
+		document.write("<div>")
+		
+
+		function add() {
+			inputval = parseInt(document.getElementById("addval").value);
+			arr.push(inputval);
+			// document.write(arr);
+			
+			console.log(arr);
+		}
+		function show() {
+			dispVal = document.getElementById("disp").innerHTML = arr;
+			
+		}
+		document.write("</div>")
+
+
+		// var sum =0;
+		// var arr2 = new Array();
+
+		// for(var i = 0; i<2;i++){
+		// 	arr2[i] = parseInt(prompt("Add array:-"));
+		// 	sum = sum+arr2[i];
+		// }
+		// document.write(sum);
+	</script>
+	<input type="text" id="addval">
+		<button onclick=add()>Add</button>
+		<button onclick=show()>Display</button>
+		<div id = "disp"></div>
+
+	<script type="text/javascript">
+		
+	</script>
+	
+		
+	
+</body>
+</html>
