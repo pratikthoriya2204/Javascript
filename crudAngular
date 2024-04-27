@@ -1,0 +1,153 @@
+//Express
+const exp=require('express');
+const bodyParser=require('body-parser');
+const {MongoClient}=require('mongodb');
+const cors=require('cors');
+
+const app=exp();
+const port=3000;
+
+app.use(bodyParser.json())
+app.use(cors());
+
+const client=new MongoClient('mongodb://localhost:27017');
+let db;
+
+
+try{
+    client.connect().then(res=>{
+        db=res.db('userdb');
+        console.log('connected');
+    }).catch(e=>{
+        console.error('failed to connect',e);
+    });
+}catch(error){
+    console.error('failed to connect',error);
+}
+
+
+
+app.post('/signup',async(req,res)=>{
+    const{username,password}=req.body;
+
+
+    const existinguser=await db.collection('user').findOne({username});
+    if(existinguser){
+        return res.status(400).json({message:'user already exist'});
+    }
+
+    await db.collection('user').insertOne({username,password});
+    return res.status(201).json({message:'user created successfully'});
+});
+
+app.post('/login',async(req,res)=>{
+    const{username,password}=res.body;
+    const user=await db.collection('user').findOne({username,password});
+
+    if(!user){
+        return res.status(401).json({message:'invalid user'});
+    }
+
+    return res.status(200).json({message:'login successfull'});
+});
+
+app.get('/get',async(req,res)=>{
+    await db.collection('user').find().toArray();
+    if(!user){
+        return res.status(401).json({message:'user not found'});
+    }
+
+    return res.status(200).json(user);
+});
+
+
+
+
+
+//HTML
+<div>
+    <form>
+        <label>Enter name:</label>
+        <input type="text" name="username" id="username" [(ngModel)]="username"><br>
+        <label>Enter password:</label>
+        <input type="text" name="password" id="password" [(ngModel)]="password"><br>
+        <button type="submit" (click)="register()">Register</button>
+        <button type="submit" (click)="login()">Login</button>
+    </form>
+    <div>
+        <table>
+            <a routerLink="/register">click here to signup</a>
+            <tr *ngFor="let person of user">
+                <td>{{person.username}}</td>
+                <td>{{person.password}}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+
+//TS
+import { CommonModule } from '@angular/common';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-login',
+  standalone: true,
+  imports: [FormsModule,CommonModule,HttpClientModule],
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.css'
+})
+export class LoginComponent {
+
+  constructor(private http : HttpClient){
+    // this.getData()
+  }
+
+username:string='';
+password:string='';
+user:any[]=[];
+
+private readonly loginUrl:string ="http://localhost:3000/login"
+
+
+login(){
+   const loginBody:object ={username:this.username,password:this.password}
+
+  this.http.post(this.loginUrl,loginBody).subscribe((response:any)=>{
+    console.log(response);
+    alert(response.message);
+    //return response;
+    if(response.message=="Login successful"){
+      this.getData()
+    }
+  })
+}
+//http://localhost:3000/signup
+//https://jsonplaceholder.typicode.com/posts
+regestier(){
+  this.http.post("http://localhost:3000/signup",{username:this.username,password:this.password}).subscribe((data:any)=>{
+    alert(data.message);
+  })
+}
+getData(){
+//http://localhost:3000/get
+  this.http.get("http://localhost:3000/get").subscribe((data:any)=>{
+    console.log(data);
+    this.user=data;
+    // data.forEach((data:any) => {
+    //   console.log(data);
+    //   this.user.push(data);
+      console.log(this.user);
+      
+    // });
+    
+  })
+
+
+}
+
+
+}
